@@ -1,1 +1,33 @@
 @import 'tailwindcss';
+
+@theme {
+  --color-brand-cream: #f6f5f1;
+  --color-brand-graphite: #1f2626;
+  --color-brand-green: #194b46;
+  --color-brand-green-hover: #143d39;
+  --color-brand-terracotta: #c86f50;
+  --color-brand-terracotta-hover: #b45e41;
+  --color-brand-border: #e5e3dc;
+  --color-brand-card: #ffffff;
+  --color-brand-muted: #646e6e;
+}
+
+:root {
+  --background: #f6f5f1;
+  --foreground: #1f2626;
+}
+
+body {
+  background-color: var(--background);
+  color: var(--foreground);
+  font-family:
+    -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Custom smooth transitions */
+button,
+a {
+  transition: all 0.15s ease-in-out;
+}
