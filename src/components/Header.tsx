@@ -2,12 +2,20 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
-import { Phone, Calculator, Menu, X, MapPin } from 'lucide-react';
+import { Phone, Menu, X } from 'lucide-react';
 import type { City } from '@/domain/calculator/types';
 
 interface HeaderProps {
   currentCity?: City;
 }
+
+const NAV: { href: (city: City) => string; label: string }[] = [
+  { href: (city) => `/${city}#services`, label: 'Услуги' },
+  { href: (city) => `/calculator?city=${city}`, label: 'Калькулятор' },
+  { href: (city) => `/${city}#cases`, label: 'Примеры' },
+  { href: () => '/normy', label: 'Нормы' },
+  { href: (city) => `/${city}#contacts`, label: 'Контакты' },
+];
 
 export function Header({ currentCity = 'spb' }: HeaderProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -15,169 +23,156 @@ export function Header({ currentCity = 'spb' }: HeaderProps) {
   const phoneDisplay = currentCity === 'spb' ? '+7 (812) 209-15-40' : '+7 (831) 280-92-30';
   const phoneHref = currentCity === 'spb' ? 'tel:+78122091540' : 'tel:+78312809230';
 
-  const otherCity = currentCity === 'spb' ? 'nn' : 'spb';
-  const otherCityLabel = currentCity === 'spb' ? 'Нижний Новгород' : 'Санкт-Петербург';
-
   return (
-    <header className="sticky top-0 z-40 bg-[#F6F5F1]/95 backdrop-blur-md border-b border-[#E5E3DC]">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-20">
-          {/* Logo & Brand */}
-          <div className="flex items-center space-x-3">
-            <Link href={`/${currentCity}`} className="flex flex-col">
-              <span className="text-xl sm:text-2xl font-black tracking-tight text-[#1F2626]">
+    <header className="sticky top-0 z-40">
+      <div className="bg-[#1F2626] text-white">
+        <div className="max-w-7xl mx-auto h-10 px-4 sm:px-6 lg:px-8 flex items-center justify-between gap-4 text-[11px] tracking-wide">
+          <div className="flex items-center gap-1 whitespace-nowrap">
+            <CityLink city="spb" currentCity={currentCity} label="СПб" />
+            <span className="text-white/25 px-1">/</span>
+            <CityLink city="nn" currentCity={currentCity} label="НН" />
+          </div>
+
+          <p className="hidden sm:block text-white/45 whitespace-nowrap">
+            Гипсокартон · шпаклёвка · покраска
+          </p>
+
+          <a
+            href={phoneHref}
+            className="inline-flex items-center gap-1.5 font-semibold text-white/90 hover:text-white whitespace-nowrap"
+          >
+            <Phone className="w-3 h-3 text-[#C86F50]" />
+            {phoneDisplay}
+          </a>
+        </div>
+      </div>
+
+      <div className="bg-[#F6F5F1]/92 backdrop-blur-md border-b border-[#E5E3DC]">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between gap-6 h-[68px]">
+            <Link href={`/${currentCity}`} className="flex items-center gap-3 shrink-0">
+              <span className="w-9 h-9 rounded-lg bg-[#194B46] text-white text-[11px] font-black tracking-wide flex items-center justify-center">
+                СГ
+              </span>
+              <span className="text-[17px] sm:text-xl font-black tracking-tight text-[#1F2626] whitespace-nowrap leading-none">
                 САВИН <span className="text-[#194B46]">ГРУПП</span>
               </span>
-              <span className="text-[10px] uppercase tracking-wider text-[#646E6E] font-medium">
-                ГКЛ конструкции &bull; Шпаклёвка &bull; Покраска
-              </span>
             </Link>
 
-            {/* City Switcher Pill */}
-            <div className="hidden sm:flex items-center ml-4 pl-4 border-l border-[#E5E3DC]">
-              <div className="flex items-center bg-white rounded-full p-1 border border-[#E5E3DC] shadow-xs text-xs font-medium">
+            <nav className="hidden lg:flex flex-1 items-center justify-center gap-8 text-[13px] font-medium text-[#1F2626] whitespace-nowrap">
+              {NAV.map((item) => (
                 <Link
-                  href="/spb"
-                  className={`px-3 py-1 rounded-full transition-all ${
-                    currentCity === 'spb'
-                      ? 'bg-[#194B46] text-white shadow-xs font-semibold'
-                      : 'text-[#646E6E] hover:text-[#1F2626]'
-                  }`}
+                  key={item.label}
+                  href={item.href(currentCity)}
+                  className="relative py-1 text-[#3A4343] hover:text-[#194B46] after:absolute after:left-0 after:-bottom-0.5 after:h-px after:w-0 after:bg-[#194B46] after:transition-all hover:after:w-full"
                 >
-                  СПб
+                  {item.label}
                 </Link>
-                <Link
-                  href="/nn"
-                  className={`px-3 py-1 rounded-full transition-all ${
-                    currentCity === 'nn'
-                      ? 'bg-[#194B46] text-white shadow-xs font-semibold'
-                      : 'text-[#646E6E] hover:text-[#1F2626]'
-                  }`}
-                >
-                  Нижний Новгород
-                </Link>
-              </div>
+              ))}
+            </nav>
+
+            <div className="flex items-center gap-2 sm:gap-3 shrink-0">
+              <Link
+                href={`/calculator?city=${currentCity}`}
+                className="hidden sm:inline-flex items-center justify-center h-10 px-4 sm:px-5 rounded-full text-[13px] font-semibold text-white bg-[#C86F50] hover:bg-[#B45E41] shadow-[0_1px_2px_rgba(200,111,80,0.35)] whitespace-nowrap"
+              >
+                Рассчитать смету
+              </Link>
+
+              <button
+                onClick={() => setMobileMenuOpen((open) => !open)}
+                className="lg:hidden inline-flex items-center justify-center w-10 h-10 rounded-full border border-[#E5E3DC] bg-white text-[#1F2626]"
+                aria-label={mobileMenuOpen ? 'Закрыть меню' : 'Открыть меню'}
+                aria-expanded={mobileMenuOpen}
+              >
+                {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+              </button>
             </div>
-          </div>
-
-          {/* Navigation Links */}
-          <nav className="hidden lg:flex items-center space-x-8 text-sm font-medium text-[#1F2626]">
-            <Link
-              href={`/${currentCity}#services`}
-              className="hover:text-[#194B46] transition-colors"
-            >
-              Услуги
-            </Link>
-            <Link
-              href={`/calculator?city=${currentCity}`}
-              className="hover:text-[#194B46] transition-colors flex items-center gap-1.5"
-            >
-              <Calculator className="w-4 h-4 text-[#C86F50]" />
-              Калькулятор
-            </Link>
-            <Link href={`/${currentCity}#cases`} className="hover:text-[#194B46] transition-colors">
-              Примеры работ
-            </Link>
-            <Link href="/normy" className="hover:text-[#194B46] transition-colors">
-              СП и ГОСТ
-            </Link>
-            <Link
-              href={`/${currentCity}#contacts`}
-              className="hover:text-[#194B46] transition-colors"
-            >
-              Контакты
-            </Link>
-          </nav>
-
-          {/* Contact & CTA */}
-          <div className="hidden md:flex items-center space-x-4">
-            <a
-              href={phoneHref}
-              className="flex items-center gap-2 text-sm font-bold text-[#1F2626] hover:text-[#194B46]"
-            >
-              <Phone className="w-4 h-4 text-[#194B46]" />
-              <span>{phoneDisplay}</span>
-            </a>
-
-            <Link
-              href={`/calculator?city=${currentCity}`}
-              className="inline-flex items-center justify-center px-4 py-2.5 rounded-lg text-sm font-semibold text-white bg-[#C86F50] hover:bg-[#B45E41] shadow-xs"
-            >
-              Рассчитать смету
-            </Link>
-          </div>
-
-          {/* Mobile menu button */}
-          <div className="flex md:hidden items-center space-x-2">
-            <a
-              href={phoneHref}
-              className="p-2 text-[#194B46] bg-white rounded-lg border border-[#E5E3DC]"
-              aria-label="Позвонить"
-            >
-              <Phone className="w-5 h-5" />
-            </a>
-            <button
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="p-2 text-[#1F2626] bg-white rounded-lg border border-[#E5E3DC]"
-              aria-label="Меню"
-            >
-              {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-            </button>
           </div>
         </div>
       </div>
 
-      {/* Mobile Drawer */}
       {mobileMenuOpen && (
-        <div className="md:hidden border-t border-[#E5E3DC] bg-[#F6F5F1] px-4 pt-3 pb-6 space-y-4">
-          <div className="flex items-center justify-between pb-3 border-b border-[#E5E3DC]">
-            <span className="text-xs font-semibold text-[#646E6E] flex items-center gap-1">
-              <MapPin className="w-3.5 h-3.5 text-[#194B46]" />
-              Текущий город:
-            </span>
+        <div className="lg:hidden border-b border-[#E5E3DC] bg-[#F6F5F1] px-4 sm:px-6 py-5 space-y-5">
+          <div className="flex rounded-full bg-white border border-[#E5E3DC] p-1">
             <Link
-              href={`/${otherCity}`}
+              href="/spb"
               onClick={() => setMobileMenuOpen(false)}
-              className="text-xs font-bold text-[#194B46] underline"
+              className={`flex-1 text-center text-sm font-semibold py-2 rounded-full ${
+                currentCity === 'spb' ? 'bg-[#194B46] text-white' : 'text-[#646E6E]'
+              }`}
             >
-              Сменить на {otherCityLabel}
+              Санкт-Петербург
+            </Link>
+            <Link
+              href="/nn"
+              onClick={() => setMobileMenuOpen(false)}
+              className={`flex-1 text-center text-sm font-semibold py-2 rounded-full ${
+                currentCity === 'nn' ? 'bg-[#194B46] text-white' : 'text-[#646E6E]'
+              }`}
+            >
+              Нижний Новгород
             </Link>
           </div>
 
-          <div className="flex flex-col space-y-3 text-base font-medium text-[#1F2626]">
-            <Link href={`/${currentCity}#services`} onClick={() => setMobileMenuOpen(false)}>
-              Услуги
-            </Link>
-            <Link
-              href={`/calculator?city=${currentCity}`}
-              onClick={() => setMobileMenuOpen(false)}
-              className="flex items-center gap-2 text-[#C86F50] font-semibold"
-            >
-              <Calculator className="w-4 h-4" />
-              Онлайн-калькулятор
-            </Link>
-            <Link href={`/${currentCity}#cases`} onClick={() => setMobileMenuOpen(false)}>
-              Примеры работ
-            </Link>
-            <Link href="/normy" onClick={() => setMobileMenuOpen(false)}>
-              Строительные нормативы (СП/ГОСТ)
-            </Link>
-            <Link href={`/${currentCity}#contacts`} onClick={() => setMobileMenuOpen(false)}>
-              Контакты
-            </Link>
-          </div>
+          <nav className="flex flex-col">
+            {NAV.map((item) => (
+              <Link
+                key={item.label}
+                href={item.href(currentCity)}
+                onClick={() => setMobileMenuOpen(false)}
+                className="py-3 border-b border-[#E5E3DC] text-base font-medium text-[#1F2626]"
+              >
+                {item.label}
+              </Link>
+            ))}
+          </nav>
 
-          <div className="pt-2">
-            <Link
-              href={`/calculator?city=${currentCity}`}
-              onClick={() => setMobileMenuOpen(false)}
-              className="w-full flex items-center justify-center py-3 rounded-lg text-sm font-bold text-white bg-[#C86F50]"
-            >
-              Рассчитать стоимость онлайн
-            </Link>
-          </div>
+          <a
+            href={phoneHref}
+            className="flex items-center justify-center gap-2 h-12 rounded-full border border-[#E5E3DC] bg-white text-sm font-semibold text-[#1F2626]"
+          >
+            <Phone className="w-4 h-4 text-[#194B46]" />
+            {phoneDisplay}
+          </a>
+
+          <Link
+            href={`/calculator?city=${currentCity}`}
+            onClick={() => setMobileMenuOpen(false)}
+            className="flex items-center justify-center h-12 rounded-full text-sm font-semibold text-white bg-[#C86F50]"
+          >
+            Рассчитать смету
+          </Link>
         </div>
       )}
     </header>
+  );
+}
+
+function CityLink({
+  city,
+  currentCity,
+  label,
+}: {
+  city: City;
+  currentCity: City;
+  label: string;
+}) {
+  const active = city === currentCity;
+
+  return (
+    <Link
+      href={`/${city}`}
+      className={
+        active
+          ? 'inline-flex items-center gap-1.5 px-2 py-1 rounded-full font-semibold bg-white/10 text-white'
+          : 'inline-flex items-center gap-1.5 px-2 py-1 rounded-full font-semibold text-white/45 hover:text-white'
+      }
+    >
+      <span
+        className={active ? 'w-1.5 h-1.5 rounded-full bg-[#C86F50]' : 'w-1.5 h-1.5 rounded-full'}
+      />
+      {label}
+    </Link>
   );
 }

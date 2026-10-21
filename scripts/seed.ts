@@ -8,7 +8,7 @@ import {
 } from '../src/server/db/schema';
 import { hashPassword } from '../src/server/auth/password';
 import { SEED_PRICE_LIST_SPB, SEED_PRICE_LIST_NN } from '../src/domain/calculator/seed';
-import { eq } from 'drizzle-orm';
+import { and, eq } from 'drizzle-orm';
 
 async function seed() {
   console.log('🌱 Starting Savin Group Database Seeding...');
@@ -99,29 +99,37 @@ async function seed() {
     const existingVersion = await db
       .select()
       .from(priceListVersions)
-      .where(eq(priceListVersions.id, pList.versionId))
+      .where(and(eq(priceListVersions.city, pList.city), eq(priceListVersions.versionNumber, 1)))
       .limit(1);
 
     if (existingVersion.length === 0) {
-      await db.insert(priceListVersions).values({
-        id: pList.versionId,
-        city: pList.city,
-        versionNumber: 1,
-        status: 'PUBLISHED',
-        publishedAt: new Date(),
-        algorithmVersion: pList.algorithmVersion,
-      });
+      const [inserted] = await db
+        .insert(priceListVersions)
+        .values({
+          city: pList.city,
+          versionNumber: 1,
+          status: 'PUBLISHED',
+          publishedAt: new Date(),
+          algorithmVersion: pList.algorithmVersion,
+        })
+        .returning({ id: priceListVersions.id });
+
+      if (!inserted) {
+        throw new Error(`Failed to insert price list version for ${pList.city}`);
+      }
 
       for (const item of Object.values(pList.services)) {
         await db.insert(priceListItems).values({
-          versionId: pList.versionId,
+          versionId: inserted.id,
           serviceCode: item.serviceCode,
           minPriceKopeks: item.minPriceKopeks,
           maxPriceKopeks: item.maxPriceKopeks,
           isEnabled: item.isEnabled,
         });
       }
-      console.log(`✅ Seeded published price list: ${pList.city} (${pList.versionId})`);
+      console.log(`✅ Seeded published price list: ${pList.city} (${inserted.id})`);
+    } else {
+      console.log(`ℹ️ Price list already exists: ${pList.city}`);
     }
   }
 

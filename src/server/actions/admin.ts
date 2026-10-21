@@ -22,7 +22,7 @@ import {
 import { verifyPassword } from '@/server/auth/password';
 import { sendTelegramMessage } from '@/server/telegram/bot';
 import { formatTelegramLeadMessage } from '@/server/telegram/format';
-import type { City, CalculationResult } from '@/domain/calculator/types';
+import type { City } from '@/domain/calculator/types';
 
 // Admin Login Action
 export async function loginAdminAction(formData: FormData) {
@@ -57,7 +57,7 @@ export async function loginAdminAction(formData: FormData) {
     maxAge: SESSION_MAX_AGE_SECONDS,
   });
 
-  redirect('/_console');
+  redirect('/admin');
 }
 
 // Admin Logout Action
@@ -70,7 +70,7 @@ export async function logoutAdminAction() {
   }
 
   cookieStore.delete(SESSION_COOKIE_NAME);
-  redirect('/_console/login');
+  redirect('/admin/login');
 }
 
 // Update Lead Status

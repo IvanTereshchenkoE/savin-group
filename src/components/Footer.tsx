@@ -8,7 +8,7 @@ interface FooterProps {
 }
 
 export function Footer({ currentCity = 'spb' }: FooterProps) {
-  const currentYear = new Date().getFullYear();
+  const currentYear = 2026;
   const phone = currentCity === 'spb' ? '+7 (812) 209-15-40' : '+7 (831) 280-92-30';
   const phoneHref = currentCity === 'spb' ? 'tel:+78122091540' : 'tel:+78312809230';
 

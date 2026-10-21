@@ -85,7 +85,7 @@ export default async function AdminDashboardPage() {
         <div className="p-6 border-b border-[#E5E3DC] flex items-center justify-between">
           <h2 className="text-base font-bold text-[#1F2626]">Последние поступившие заявки</h2>
           <Link
-            href="/_console/leads"
+            href="/admin/leads"
             className="text-xs font-bold text-[#194B46] hover:underline flex items-center gap-1"
           >
             Все заявки <ArrowRight className="w-3.5 h-3.5" />

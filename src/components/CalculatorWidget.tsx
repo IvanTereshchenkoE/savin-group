@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
+import React, { useMemo, useRef, useState } from 'react';
 import Link from 'next/link';
 import {
   Calculator,
@@ -49,12 +49,16 @@ export function CalculatorWidget({ initialCity = 'spb', className = '' }: Calcul
   const [submitSuccess, setSubmitSuccess] = useState<string | null>(null);
   const [submitError, setSubmitError] = useState<string | null>(null);
 
-  // Client idempotency key
-  const [idempotencyKey, setIdempotencyKey] = useState<string>(() => {
-    return typeof crypto !== 'undefined' && crypto.randomUUID
-      ? crypto.randomUUID()
-      : 'key-' + Math.random().toString(36).substring(2);
-  });
+  const idempotencyKeyRef = useRef<string | null>(null);
+  const getIdempotencyKey = () => {
+    if (!idempotencyKeyRef.current) {
+      idempotencyKeyRef.current =
+        typeof crypto !== 'undefined' && crypto.randomUUID
+          ? crypto.randomUUID()
+          : `${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
+    }
+    return idempotencyKeyRef.current;
+  };
 
   const priceList = useMemo(() => getSeedPriceList(city), [city]);
 
@@ -141,7 +145,7 @@ export function CalculatorWidget({ initialCity = 'spb', className = '' }: Calcul
     }
 
     const payload = {
-      idempotencyKey,
+      idempotencyKey: getIdempotencyKey(),
       city,
       type: 'CALCULATOR',
       name: name.trim() || undefined,
@@ -181,10 +185,8 @@ export function CalculatorWidget({ initialCity = 'spb', className = '' }: Calcul
       }
 
       setSubmitSuccess(data.publicNumber);
-      // Generate new key for next submission
-      if (typeof crypto !== 'undefined' && crypto.randomUUID) {
-        setIdempotencyKey(crypto.randomUUID());
-      }
+      // Reset key for next submission
+      idempotencyKeyRef.current = null;
     } catch {
       setSubmitError('Сетевая ошибка при отправке заявки. Попробуйте еще раз.');
     } finally {

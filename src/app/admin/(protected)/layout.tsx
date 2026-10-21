@@ -5,11 +5,13 @@ import { LayoutDashboard, Users, Coins, Settings, LogOut, ExternalLink } from 'l
 import { getCurrentAdmin } from '@/server/auth/session';
 import { logoutAdminAction } from '@/server/actions/admin';
 
+export const instant = false;
+
 export default async function AdminProtectedLayout({ children }: { children: React.ReactNode }) {
   const admin = await getCurrentAdmin();
 
   if (!admin) {
-    redirect('/_console/login');
+    redirect('/admin/login');
   }
 
   return (
@@ -30,28 +32,28 @@ export default async function AdminProtectedLayout({ children }: { children: Rea
           {/* Navigation */}
           <nav className="space-y-1.5 text-sm font-medium">
             <Link
-              href="/_console"
+              href="/admin"
               className="flex items-center gap-3 px-3.5 py-2.5 rounded-xl hover:bg-[#273232] text-[#A0ACAC] hover:text-white transition-colors"
             >
               <LayoutDashboard className="w-4 h-4 text-[#194B46]" />
               Обзор
             </Link>
             <Link
-              href="/_console/leads"
+              href="/admin/leads"
               className="flex items-center gap-3 px-3.5 py-2.5 rounded-xl hover:bg-[#273232] text-[#A0ACAC] hover:text-white transition-colors"
             >
               <Users className="w-4 h-4 text-[#C86F50]" />
               Заявки клиентов
             </Link>
             <Link
-              href="/_console/prices"
+              href="/admin/prices"
               className="flex items-center gap-3 px-3.5 py-2.5 rounded-xl hover:bg-[#273232] text-[#A0ACAC] hover:text-white transition-colors"
             >
               <Coins className="w-4 h-4 text-amber-400" />
               Тарифы и прайс-листы
             </Link>
             <Link
-              href="/_console/settings"
+              href="/admin/settings"
               className="flex items-center gap-3 px-3.5 py-2.5 rounded-xl hover:bg-[#273232] text-[#A0ACAC] hover:text-white transition-colors"
             >
               <Settings className="w-4 h-4 text-[#808C8C]" />
