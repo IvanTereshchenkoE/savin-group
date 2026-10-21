@@ -1,13 +1,6 @@
 import React from 'react';
 import Link from 'next/link';
-import {
-  ShieldCheck,
-  Clock,
-  Ruler,
-  ArrowRight,
-  ExternalLink,
-  ChevronDown,
-} from 'lucide-react';
+import { ShieldCheck, Clock, Ruler, ArrowRight, ExternalLink, ChevronDown } from 'lucide-react';
 import type { City } from '@/domain/calculator/types';
 
 interface SectionProps {

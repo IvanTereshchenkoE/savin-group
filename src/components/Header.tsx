@@ -149,15 +149,7 @@ export function Header({ currentCity = 'spb' }: HeaderProps) {
   );
 }
 
-function CityLink({
-  city,
-  currentCity,
-  label,
-}: {
-  city: City;
-  currentCity: City;
-  label: string;
-}) {
+function CityLink({ city, currentCity, label }: { city: City; currentCity: City; label: string }) {
   const active = city === currentCity;
 
   return (
