@@ -1,0 +1,31 @@
+# Caddy configuration for SAVIN GROUP (reverse proxy + auto HTTPS)
+
+{$PUBLIC_HOST:example.ru} {
+    encode gzip zstd
+    
+    # Media static files
+    handle_path /media/* {
+        root * /srv/media
+        file_server
+    }
+
+    # Public Next.js app
+    handle {
+        reverse_proxy app:3000 {
+            header_up Host {host}
+            header_up X-Real-IP {remote_host}
+        }
+    }
+}
+
+{$ADMIN_HOST:admin.example.ru} {
+    encode gzip zstd
+
+    # Admin Next.js app
+    handle {
+        reverse_proxy app:3000 {
+            header_up Host {host}
+            header_up X-Real-IP {remote_host}
+        }
+    }
+}

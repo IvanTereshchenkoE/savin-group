@@ -1,34 +1,58 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# SAVIN GROUP — Коммерческий веб-сайт и система управления
 
-## Getting Started
+> Единая кодовая база: Next.js (App Router), React 19, TypeScript (strict), Tailwind CSS, Drizzle ORM, PostgreSQL, Caddy, Telegram Outbox.
 
-First, run the development server:
+## 0. Архитектурные принципы
+
+- **Один репозиторий, одно Next.js-приложение, одна БД PostgreSQL, один VPS.**
+- Публичный сайт (`example.ru`) и панель управления (`admin.example.ru`) маршрутизируются на один и тот же процесс Next.js через Caddy / Host allowlist.
+- Никакого NestJS, отдельных microservices, сторонних тяжелых UI-библиотек (MUI / Antd) и вымышленных сложностей.
+- **Калькулятор — чистый TypeScript-домен** (`src/domain/calculator/*`). Браузер выполняет мгновенный предварительный расчет, но сервер пересчитывает всё заново и является единственным источником истины.
+
+## 1. Стек технологий
+
+- **Фреймворк:** Next.js (App Router), React 19, TypeScript (`strict: true`, `noUncheckedIndexedAccess: true`)
+- **Стилизация:** Tailwind CSS 4
+- **Валидация:** Zod, React Hook Form
+- **Точные вычисления:** `decimal.js` (расчет в копейках, банковское округление HALF_UP, округление диапазонов вниз для min и вверх для max в рублях)
+- **База данных:** PostgreSQL, Drizzle ORM
+- **Аутентификация:** Защищенные сессии в БД, куки `HttpOnly; Secure; SameSite=Lax`, привязанные к админ-хосту
+- **Уведомления:** Исходящий Telegram Bot API через паттерн `notification_outbox` с гарантией сохранения заявки при сетевых сбоях
+- **Тесты:** Vitest (100% ветвей домена калькулятора), Playwright E2E
+
+## 2. Команды для разработки и проверки
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+# Установка зависимостей
+pnpm install
+
+# Проверка линтером и типами
+pnpm lint
+pnpm typecheck
+
+# Форматирование
+pnpm format:check
+pnpm format:write
+
+# Тестирование домена и API
+pnpm test
+pnpm test:coverage
+
+# Сборка проекта
+pnpm build
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 3. Статус этапов разработки (согласно MASTER PLAN)
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- [x] **P0. Уточнения и спецификация:** Выявлены блокеры (конфликт ставок НН, высотные коэффициенты, малый объем). Безопасные defaults зафиксированы.
+- [x] **P1. Скелет проекта:** Next.js App Router, strict TypeScript, Tailwind CSS, Vitest, Prettier, конфигурация окружения.
+- [ ] **P2. База данных и аутентификация:** Drizzle schema, миграции, Better Auth / DB sessions.
+- [x] **P3. Домен калькулятора:** Чистый модуль `src/domain/calculator`, валидация Zod, точная математика, 100% покрытие веток и контрольные сценарии C01–C25.
+- [ ] **P4. API расчетов и заявок:** Route Handlers, идемпотентность, снимки расчетов, CSRF/Rate limit.
+- [ ] **P5. Telegram Outbox:** Надежная отправка, повторы по крону, тестовые уведомления.
+- [ ] **P6. Публичный интерфейс:** Лендинг для СПб и НН, адаптивный калькулятор, сравнение до/после.
+- [ ] **P7. Админка (цены и контент):** Управление версиями прайса, драфты, публикация.
+- [ ] **P8. Медиа и портфолио:** Оптимизация sharp, безопасное локальное хранение.
+- [ ] **P9. SEO и нормативы:** Метаданные, OpenGraph, sitemap, карточки ГОСТ/СП.
+- [ ] **P10. Релиз и безопасность:** Аудит, бэкапы, Docker Compose, Caddy.
+- [ ] **P11. Сдача заказчику.**
